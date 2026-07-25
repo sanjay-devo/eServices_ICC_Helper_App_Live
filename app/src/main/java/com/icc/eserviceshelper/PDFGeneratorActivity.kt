@@ -482,9 +482,15 @@ class PDFGeneratorActivity : AppCompatActivity() {
                 val tipsContent = data.tips.map { tip ->
                     val t = PdfPTable(1)
                     t.widthPercentage = 100f
-                    t.spacingAfter = 12f
+                    t.spacingBefore = 8f // Small gap between multiple tips
                     val c = PdfPCell()
                     c.border = Rectangle.NO_BORDER
+                    
+                    // Vertical centering for tips text
+                    c.verticalAlignment = Element.ALIGN_MIDDLE
+                    c.setUseAscender(true)
+                    c.setUseDescender(true)
+                    
                     c.setPadding(15f)
                     c.paddingLeft = 20f
                     c.backgroundColor = colorTipBg
@@ -506,7 +512,7 @@ class PDFGeneratorActivity : AppCompatActivity() {
                     t.addCell(c)
                     t
                 }
-                addSection("4. Important Tips", tipsContent)
+                addSection("4. Important Tips", tipsContent, spacingBefore = 25f) // spacingBefore adds gap from header
             }
 
             // 7. FAQ (Questions & Answers)
