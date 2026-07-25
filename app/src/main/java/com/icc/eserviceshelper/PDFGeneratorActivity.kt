@@ -450,7 +450,14 @@ class PDFGeneratorActivity : AppCompatActivity() {
                     table.widthPercentage = 100f
                     val cell = PdfPCell()
                     cell.border = Rectangle.NO_BORDER
-                    cell.setPadding(10f)
+                    
+                    // Vertical centering logic for steps
+                    cell.verticalAlignment = Element.ALIGN_MIDDLE
+                    cell.setUseAscender(true)
+                    cell.setUseDescender(true)
+                    
+                    cell.paddingTop = 10f
+                    cell.paddingBottom = 10f
                     cell.paddingLeft = 20f
                     
                     // Simple left accent for each step
