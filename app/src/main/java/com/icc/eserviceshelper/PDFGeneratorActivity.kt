@@ -6,8 +6,12 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
 import com.icc.eserviceshelper.databinding.ActivityPdfGeneratorBinding
 import com.icc.eserviceshelper.databinding.ItemPdfDocBinding
 import com.icc.eserviceshelper.databinding.ItemPdfFaqBinding
@@ -42,8 +46,129 @@ class PDFGeneratorActivity : AppCompatActivity() {
                     downloadPdf()
                     true
                 }
+                R.id.action_import_json -> {
+                    showImportJsonDialog()
+                    true
+                }
                 else -> false
             }
+        }
+    }
+
+    private fun showImportJsonDialog() {
+        val editText = EditText(this).apply {
+            hint = "Paste JSON here..."
+            minLines = 8
+            gravity = android.view.Gravity.TOP
+        }
+
+        val container = FrameLayout(this)
+        val params = FrameLayout.LayoutParams(
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        val margin = (16 * resources.displayMetrics.density).toInt()
+        params.setMargins(margin, margin / 2, margin, margin / 2)
+        editText.layoutParams = params
+        container.addView(editText)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Import JSON Template")
+            .setView(container)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Import") { _, _ ->
+                val json = editText.text.toString().trim()
+                if (json.isNotEmpty()) {
+                    importJson(json)
+                }
+            }
+            .show()
+    }
+
+    private fun importJson(json: String) {
+        try {
+            val data = Gson().fromJson(json, PdfData::class.java) ?: return
+
+            // Clear dynamic lists
+            binding.containerDocs.removeAllViews()
+            binding.containerSteps.removeAllViews()
+            binding.containerTips.removeAllViews()
+            binding.containerFaq.removeAllViews()
+
+            // Populate Static Fields
+            binding.etPdfTitle.setText(data.title)
+            binding.etPdfSubtitle.setText(data.subtitle)
+            binding.etButtonText.setText(data.buttonText)
+            binding.etButtonUrl.setText(data.buttonUrl)
+            binding.etIntroContent.setText(data.intro)
+            binding.etFooterTitle.setText(data.footerTitle)
+            binding.etFooterSubtitle.setText(data.footerSubtitle)
+
+            // Populate Dynamic Fields
+            data.docs.forEach { doc ->
+                val itemBinding = ItemPdfDocBinding.inflate(layoutInflater, binding.containerDocs, false)
+                itemBinding.etDocName.setText(doc)
+                itemBinding.btnRemoveDoc.setOnClickListener { binding.containerDocs.removeView(itemBinding.root) }
+                binding.containerDocs.addView(itemBinding.root)
+            }
+
+            data.steps.forEach { step ->
+                val itemBinding = ItemPdfStepBinding.inflate(layoutInflater, binding.containerSteps, false)
+                itemBinding.etStepText.setText(step)
+                itemBinding.btnRemoveStep.setOnClickListener { binding.containerSteps.removeView(itemBinding.root) }
+                binding.containerSteps.addView(itemBinding.root)
+            }
+
+            data.tips.forEach { tip ->
+                val itemBinding = ItemPdfTipBinding.inflate(layoutInflater, binding.containerTips, false)
+                itemBinding.etTipTitle.setText(tip.title)
+                itemBinding.etTipDescription.setText(tip.description)
+                itemBinding.btnRemoveTip.setOnClickListener { binding.containerTips.removeView(itemBinding.root) }
+                binding.containerTips.addView(itemBinding.root)
+            }
+
+            data.faqs.forEach { faq ->
+                val itemBinding = ItemPdfFaqBinding.inflate(layoutInflater, binding.containerFaq, false)
+                itemBinding.etQuestion.setText(faq.question)
+                itemBinding.etAnswer.setText(faq.answer)
+                itemBinding.btnRemoveFaq.setOnClickListener { binding.containerFaq.removeView(itemBinding.root) }
+                binding.containerFaq.addView(itemBinding.root)
+            }
+
+            // Refresh UI state - Ensure sections are visible if they have content
+            if (data.intro.isNotEmpty()) {
+                binding.contentIntro.visibility = View.VISIBLE
+                binding.iconIntro.rotation = 180f
+            }
+            if (data.docs.isNotEmpty()) {
+                binding.contentDocs.visibility = View.VISIBLE
+                binding.iconDocs.rotation = 180f
+            }
+            if (data.steps.isNotEmpty()) {
+                binding.contentSteps.visibility = View.VISIBLE
+                binding.iconSteps.rotation = 180f
+            }
+            if (data.tips.isNotEmpty()) {
+                binding.contentTips.visibility = View.VISIBLE
+                binding.iconTips.rotation = 180f
+            }
+            if (data.faqs.isNotEmpty()) {
+                binding.contentFaq.visibility = View.VISIBLE
+                binding.iconFaq.rotation = 180f
+            }
+            if (data.footerTitle.isNotEmpty()) {
+                binding.contentFooter.visibility = View.VISIBLE
+                binding.iconFooter.rotation = 180f
+            }
+
+            Toast.makeText(this, "Data imported successfully!", Toast.LENGTH_SHORT).show()
+
+        } catch (e: Exception) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Error")
+                .setMessage("Invalid JSON format.")
+                .setPositiveButton("OK", null)
+                .show()
         }
     }
 

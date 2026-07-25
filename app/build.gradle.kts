@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
     implementation(libs.itextg)
+    implementation(libs.gson)
     // implementation(libs.openpdf)
 
     testImplementation(libs.junit)
