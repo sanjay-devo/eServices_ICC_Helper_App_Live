@@ -30,7 +30,11 @@ class InfoActivity : AppCompatActivity() {
         if (type == "ORGANIZATION") {
             binding.btnLogin.visibility = android.view.View.VISIBLE
             binding.btnLogin.setOnClickListener {
+                Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
+            }
+            binding.btnLogin.setOnLongClickListener {
                 startActivity(Intent(this, PDFGeneratorActivity::class.java))
+                true
             }
         }
 
