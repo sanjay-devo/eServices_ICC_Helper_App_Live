@@ -19,7 +19,24 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:navigationIcon="@drawable/ic_back"
-            app:titleTextColor="@color/white" />
+            app:titleTextColor="@color/white">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogin"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="12dp"
+                android:text="Login"
+                android:textColor="?attr/colorPrimary"
+                android:visibility="gone"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="8dp"
+                app:paddingStart="16dp"
+                app:paddingEnd="16dp" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 

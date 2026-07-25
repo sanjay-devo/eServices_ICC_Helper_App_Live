@@ -27,6 +27,13 @@ class InfoActivity : AppCompatActivity() {
         binding.toolbar.title = title
         binding.toolbar.setNavigationOnClickListener { finish() }
 
+        if (type == "ORGANIZATION") {
+            binding.btnLogin.visibility = android.view.View.VISIBLE
+            binding.btnLogin.setOnClickListener {
+                openUrl("https://indiacybercafe.com/login")
+            }
+        }
+
         setupRecyclerView(items)
     }
 
