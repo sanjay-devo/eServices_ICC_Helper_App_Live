@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info"
+            android:title="About App" />
+    </group>
+
+    <item android:title="Legal &amp; Information">
+        <menu>
+            <item
+                android:id="@+id/nav_privacy"
+                android:icon="@drawable/ic_privacy_tip"
+                android:title="Privacy Policy" />
+            <item
+                android:id="@+id/nav_terms"
+                android:icon="@drawable/ic_description"
+                android:title="Terms &amp; Conditions" />
+            <item
+                android:id="@+id/nav_disclaimer"
+                android:icon="@drawable/ic_warning"
+                android:title="Disclaimer" />
+            <item
+                android:id="@+id/nav_sources"
+                android:icon="@drawable/ic_public"
+                android:title="Sources &amp; References" />
+        </menu>
+    </item>
+
+    <item android:title="Contact &amp; Support">
+        <menu>
+            <item
+                android:id="@+id/nav_contact"
+                android:icon="@drawable/ic_call"
+                android:title="Contact Us" />
+            <item
+                android:id="@+id/nav_report"
+                android:icon="@drawable/ic_bug_report"
+                android:title="Report Issue" />
+        </menu>
+    </item>
+
+    <item android:title="App Actions">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_share"
+                android:title="Share App" />
+            <item
+                android:id="@+id/nav_rate"
+                android:icon="@drawable/ic_star_rate"
+                android:title="Rate App" />
+            <item
+                android:id="@+id/nav_update"
+                android:icon="@drawable/ic_system_update"
+                android:title="Check for Updates" />
+        </menu>
+    </item>
+
+    <item android:title="App Info">
+        <menu>
+            <item
+                android:id="@+id/nav_version"
+                android:icon="@drawable/ic_new_releases"
+                android:title="Version" />
+            <item
+                android:id="@+id/nav_developer"
+                android:icon="@drawable/ic_person"
+                android:title="Developer" />
+            <item
+                android:id="@+id/nav_organization"
+                android:icon="@drawable/ic_business"
+                android:title="Organization" />
+        </menu>
+    </item>
+</menu>
