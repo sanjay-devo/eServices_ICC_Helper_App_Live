@@ -365,7 +365,7 @@ class PDFGeneratorActivity : AppCompatActivity() {
                 document.add(tableBtn)
             }
 
-            // Universal Section Add Helper (Modified to allow natural page flow)
+            // Universal Section Add Helper (Modified to allow natural page flow and vertical centering)
             fun addSection(title: String, contentElements: List<Element>, spacingBefore: Float = 15f) {
                 val sectionTable = PdfPTable(1)
                 sectionTable.widthPercentage = 100f
@@ -379,15 +379,25 @@ class PDFGeneratorActivity : AppCompatActivity() {
                 val headerCell = PdfPCell()
                 headerCell.backgroundColor = colorLightBlueBg
                 headerCell.border = Rectangle.NO_BORDER
-                headerCell.setPadding(10f)
-                headerCell.paddingLeft = 15f
+                
+                // Vertical centering logic
+                headerCell.verticalAlignment = Element.ALIGN_MIDDLE
+                headerCell.setUseAscender(true)
+                headerCell.setUseDescender(true)
+                
+                headerCell.paddingTop = 11f
+                headerCell.paddingBottom = 11f
+                headerCell.paddingLeft = 20f
+                
                 headerCell.cellEvent = PdfPCellEvent { _, position, canvases ->
                     val cb = canvases[PdfPTable.LINECANVAS]
                     cb.setColorFill(colorPrimaryBlue)
                     cb.rectangle(position.left, position.bottom, 4f, position.height)
                     cb.fill()
                 }
-                headerCell.addElement(Paragraph(title, fontSectionHeader))
+                
+                // Using setPhrase for the most accurate vertical alignment
+                headerCell.phrase = Phrase(title, fontSectionHeader)
                 sectionTable.addCell(headerCell)
                 
                 // Add content elements as separate rows to ensure they can split across pages
@@ -396,6 +406,7 @@ class PDFGeneratorActivity : AppCompatActivity() {
                     contentCell.border = Rectangle.NO_BORDER
                     contentCell.paddingTop = 5f
                     contentCell.paddingBottom = 5f
+                    contentCell.paddingLeft = 5f
                     contentCell.addElement(element)
                     sectionTable.addCell(contentCell)
                 }
