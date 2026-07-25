@@ -307,7 +307,7 @@ class PDFGeneratorActivity : AppCompatActivity() {
             val fontNormal = Font(baseFont, 11f, Font.NORMAL, BaseColor.BLACK)
             val fontFooterTitle = Font(baseFont, 10f, Font.BOLD, colorGreyText)
             val fontFooterSub = Font(baseFont, 9f, Font.NORMAL, colorGreyText)
-            val fontButton = Font(baseFont, 12f, Font.BOLD, BaseColor.WHITE)
+            val fontButton = Font(baseFont, 14f, Font.BOLD, BaseColor.WHITE) // Increased font size for a bigger button
 
             document.open()
 
@@ -328,24 +328,38 @@ class PDFGeneratorActivity : AppCompatActivity() {
             val line = LineSeparator(2f, 100f, colorPrimaryBlue, Element.ALIGN_CENTER, 0f)
             val linePara = Paragraph()
             linePara.add(line)
-            linePara.spacingAfter = 25f
+            linePara.spacingAfter = 35f // Adjusted for equal spacing above button
             document.add(linePara)
 
             // 2. APPLY BUTTON (Centered with Rounded Corners)
             if (data.buttonText.isNotEmpty()) {
+                val buttonPhrase = Phrase(data.buttonText.uppercase(), fontButton)
+                val textWidth = ColumnText.getWidth(buttonPhrase)
+                
                 val tableBtn = PdfPTable(1)
-                tableBtn.totalWidth = 280f
+                // Set button width to text width + larger horizontal padding for a "bada" button
+                tableBtn.totalWidth = textWidth + 80f 
                 tableBtn.isLockedWidth = true
                 tableBtn.horizontalAlignment = Element.ALIGN_CENTER
                 
                 val cellBtn = PdfPCell()
                 cellBtn.border = Rectangle.NO_BORDER
-                cellBtn.setPadding(12f)
-                cellBtn.backgroundColor = colorPrimaryBlue
                 
+                // Vertical and Horizontal centering for button content
+                cellBtn.horizontalAlignment = Element.ALIGN_CENTER
+                cellBtn.verticalAlignment = Element.ALIGN_MIDDLE
+                cellBtn.setUseAscender(true)
+                cellBtn.setUseDescender(true)
+                
+                cellBtn.setPadding(14f) // Increased vertical padding for a bigger button
+                cellBtn.paddingLeft = 0f // Reset side paddings as table width handles it
+                cellBtn.paddingRight = 0f
+                
+                // Remove background color to draw it rounded manually
                 cellBtn.cellEvent = PdfPCellEvent { _, position, canvases ->
                     val cb = canvases[PdfPTable.BACKGROUNDCANVAS]
-                    cb.roundRectangle(position.left, position.bottom, position.width, position.height, 5f)
+                    // Radius set to 8f for a "best" modern look
+                    cb.roundRectangle(position.left, position.bottom, position.width, position.height, 8f)
                     cb.setColorFill(colorPrimaryBlue)
                     cb.fill()
                     
@@ -356,17 +370,15 @@ class PDFGeneratorActivity : AppCompatActivity() {
                     }
                 }
                 
-                val pBtn = Paragraph(data.buttonText.uppercase(), fontButton)
-                pBtn.alignment = Element.ALIGN_CENTER
-                cellBtn.addElement(pBtn)
+                cellBtn.phrase = buttonPhrase
                 
                 tableBtn.addCell(cellBtn)
-                tableBtn.spacingAfter = 35f
+                tableBtn.spacingAfter = 35f // Balanced spacing below button
                 document.add(tableBtn)
             }
 
             // Universal Section Add Helper (Modified to allow natural page flow and vertical centering)
-            fun addSection(title: String, contentElements: List<Element>, spacingBefore: Float = 15f) {
+            fun addSection(title: String, contentElements: List<Element>, spacingBefore: Float = 20f) {
                 val sectionTable = PdfPTable(1)
                 sectionTable.widthPercentage = 100f
                 sectionTable.spacingBefore = spacingBefore
@@ -419,7 +431,7 @@ class PDFGeneratorActivity : AppCompatActivity() {
                 val pIntro = Paragraph(data.intro, fontNormal)
                 pIntro.leading = 16f
                 pIntro.alignment = Element.ALIGN_JUSTIFIED
-                addSection("1. Introduction", listOf(pIntro))
+                addSection("1. Introduction", listOf(pIntro), spacingBefore = 0f) // Spacing handled by button's spacingAfter
             }
 
             // 4. DOCUMENTS REQUIRED
