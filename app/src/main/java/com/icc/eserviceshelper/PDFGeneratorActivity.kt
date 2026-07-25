@@ -22,6 +22,7 @@ import com.itextpdf.text.pdf.*
 import com.itextpdf.text.pdf.draw.LineSeparator
 import java.io.File
 import java.io.FileOutputStream
+import java.util.regex.Pattern
 
 class PDFGeneratorActivity : AppCompatActivity() {
 
@@ -308,6 +309,7 @@ class PDFGeneratorActivity : AppCompatActivity() {
             val fontFooterTitle = Font(baseFont, 10f, Font.BOLD, colorGreyText)
             val fontFooterSub = Font(baseFont, 9f, Font.NORMAL, colorGreyText)
             val fontButton = Font(baseFont, 14f, Font.BOLD, BaseColor.WHITE) // Increased font size for a bigger button
+            val fontLink = Font(baseFont, 11f, Font.NORMAL, colorPrimaryBlue)
 
             document.open()
 
@@ -428,7 +430,8 @@ class PDFGeneratorActivity : AppCompatActivity() {
 
             // 3. INTRODUCTION
             if (data.intro.isNotEmpty()) {
-                val pIntro = Paragraph(data.intro, fontNormal)
+                val pIntro = Paragraph()
+                pIntro.add(createPhraseWithLinks(data.intro, fontNormal, fontLink))
                 pIntro.leading = 16f
                 pIntro.alignment = Element.ALIGN_JUSTIFIED
                 addSection("1. Introduction", listOf(pIntro), spacingBefore = 0f) // Spacing handled by button's spacingAfter
@@ -444,9 +447,9 @@ class PDFGeneratorActivity : AppCompatActivity() {
                     if (doc.contains(":")) {
                         val parts = doc.split(":", limit = 2)
                         p.add(Chunk(parts[0].trim() + ": ", fontBold))
-                        p.add(Chunk(parts[1].trim(), fontNormal))
+                        p.add(createPhraseWithLinks(parts[1].trim(), fontNormal, fontLink))
                     } else {
-                        p.add(Chunk(doc, fontNormal))
+                        p.add(createPhraseWithLinks(doc, fontNormal, fontLink))
                     }
                     val listItem = ListItem(p)
                     listItem.spacingAfter = 6f
@@ -480,7 +483,9 @@ class PDFGeneratorActivity : AppCompatActivity() {
                         cb.fill()
                     }
                     
-                    val p = Paragraph("${index + 1}. $step", fontNormal)
+                    val p = Paragraph()
+                    p.add(Chunk("${index + 1}. ", fontNormal))
+                    p.add(createPhraseWithLinks(step, fontNormal, fontLink))
                     p.leading = 16f
                     cell.addElement(p)
                     table.addCell(cell)
@@ -533,7 +538,7 @@ class PDFGeneratorActivity : AppCompatActivity() {
                     }
                     val tp = Paragraph()
                     tp.add(Chunk("${tip.title}: ", fontBold))
-                    tp.add(Chunk(tip.description, fontNormal))
+                    tp.add(createPhraseWithLinks(tip.description, fontNormal, fontLink))
                     tp.leading = 16f
                     c.addElement(tp)
                     t.addCell(c)
@@ -546,10 +551,15 @@ class PDFGeneratorActivity : AppCompatActivity() {
             if (data.faqs.isNotEmpty()) {
                 val faqContent = mutableListOf<Element>()
                 data.faqs.forEach { faq ->
-                    val q = Paragraph("Q: ${faq.question}", fontBold)
+                    val q = Paragraph()
+                    q.add(Chunk("Q: ", fontBold))
+                    q.add(createPhraseWithLinks(faq.question, fontBold, fontLink))
                     q.spacingAfter = 4f
                     faqContent.add(q)
-                    val a = Paragraph("Ans: ${faq.answer}", fontNormal)
+                    
+                    val a = Paragraph()
+                    a.add(Chunk("Ans: ", fontNormal))
+                    a.add(createPhraseWithLinks(faq.answer, fontNormal, fontLink))
                     a.leading = 16f
                     a.spacingAfter = 15f
                     faqContent.add(a)
@@ -572,11 +582,13 @@ class PDFGeneratorActivity : AppCompatActivity() {
                 val ct = ColumnText(cb)
                 ct.setSimpleColumn(document.leftMargin(), 20f, pageSize.width - document.rightMargin(), 80f)
                 
-                val fP = Paragraph(data.footerTitle, fontFooterTitle)
+                val fP = Paragraph()
                 fP.alignment = Element.ALIGN_CENTER
+                fP.add(createPhraseWithLinks(data.footerTitle, fontFooterTitle, fontLink))
+                
                 if (data.footerSubtitle.isNotEmpty()) {
                     fP.add(Chunk.NEWLINE)
-                    fP.add(Phrase(data.footerSubtitle, fontFooterSub))
+                    fP.add(createPhraseWithLinks(data.footerSubtitle, fontFooterSub, fontLink))
                 }
                 ct.addElement(fP)
                 ct.go()
@@ -611,6 +623,39 @@ class PDFGeneratorActivity : AppCompatActivity() {
             Toast.makeText(this, "Error generating PDF: ${e.message}", Toast.LENGTH_SHORT).show()
         }
         return null
+    }
+
+    private fun createPhraseWithLinks(text: String, normalFont: Font, linkFont: Font): Phrase {
+        val phrase = Phrase()
+        // Regex for URL and Email
+        val pattern = Pattern.compile(
+            "([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9._-]+)|" + // Email
+            "((https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])|" + // URL with protocol
+            "((www\\.|[a-zA-Z0-9.-]+\\.(com|org|net|in|gov|edu|co|io|me|info|biz|com\\.au|gov\\.in|nic\\.in))[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])", // URL without protocol
+            Pattern.CASE_INSENSITIVE
+        )
+        val matcher = pattern.matcher(text)
+        var lastEnd = 0
+        while (matcher.find()) {
+            phrase.add(Chunk(text.substring(lastEnd, matcher.start()), normalFont))
+            val match = matcher.group()
+            val chunk = Chunk(match, linkFont)
+            
+            var absoluteUrl = match
+            if (match.contains("@") && !match.startsWith("mailto:", true)) {
+                // It's an email
+                absoluteUrl = "mailto:$match"
+            } else if (!match.startsWith("http://", true) && !match.startsWith("https://", true) && !match.startsWith("mailto:", true)) {
+                // It's a URL without protocol
+                absoluteUrl = "https://$match"
+            }
+
+            chunk.setAnchor(absoluteUrl)
+            phrase.add(chunk)
+            lastEnd = matcher.end()
+        }
+        phrase.add(Chunk(text.substring(lastEnd), normalFont))
+        return phrase
     }
 
     data class PdfData(
