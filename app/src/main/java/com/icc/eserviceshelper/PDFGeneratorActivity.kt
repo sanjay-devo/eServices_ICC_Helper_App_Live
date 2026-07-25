@@ -365,13 +365,15 @@ class PDFGeneratorActivity : AppCompatActivity() {
                 document.add(tableBtn)
             }
 
-            // Universal Section Add Helper (Maintains consistent design & prevents split headings)
+            // Universal Section Add Helper (Modified to allow natural page flow)
             fun addSection(title: String, contentElements: List<Element>, spacingBefore: Float = 15f) {
                 val sectionTable = PdfPTable(1)
                 sectionTable.widthPercentage = 100f
-                sectionTable.keepTogether = true 
                 sectionTable.spacingBefore = spacingBefore
                 sectionTable.spacingAfter = 15f
+                
+                // Allow the table and its rows to split across pages naturally
+                sectionTable.keepTogether = false
                 
                 // Header Row
                 val headerCell = PdfPCell()
@@ -388,12 +390,15 @@ class PDFGeneratorActivity : AppCompatActivity() {
                 headerCell.addElement(Paragraph(title, fontSectionHeader))
                 sectionTable.addCell(headerCell)
                 
-                // Content Row
-                val contentCell = PdfPCell()
-                contentCell.border = Rectangle.NO_BORDER
-                contentCell.paddingTop = 10f
-                contentElements.forEach { contentCell.addElement(it) }
-                sectionTable.addCell(contentCell)
+                // Add content elements as separate rows to ensure they can split across pages
+                contentElements.forEach { element ->
+                    val contentCell = PdfPCell()
+                    contentCell.border = Rectangle.NO_BORDER
+                    contentCell.paddingTop = 5f
+                    contentCell.paddingBottom = 5f
+                    contentCell.addElement(element)
+                    sectionTable.addCell(contentCell)
+                }
                 
                 document.add(sectionTable)
             }
@@ -427,37 +432,31 @@ class PDFGeneratorActivity : AppCompatActivity() {
                 addSection("2. Documents Required", listOf(list))
             }
 
-            // 5. STEP-BY-STEP (Single Rounded Container with Grey Border and Blue Strip)
+            // 5. STEP-BY-STEP (Each step as a separate item for better page flow)
             if (data.steps.isNotEmpty()) {
-                val stepsTable = PdfPTable(1)
-                stepsTable.widthPercentage = 100f
-                
-                val cell = PdfPCell()
-                cell.border = Rectangle.NO_BORDER
-                cell.setPadding(20f)
-                cell.paddingLeft = 30f
-                
-                cell.cellEvent = PdfPCellEvent { _, position, canvases ->
-                    val cb = canvases[PdfPTable.LINECANVAS]
-                    // Blue Left Accent Strip
-                    cb.setColorFill(colorPrimaryBlue)
-                    cb.rectangle(position.left, position.bottom, 4f, position.height)
-                    cb.fill()
-                    // Rounded External Grey Border
-                    cb.roundRectangle(position.left, position.bottom, position.width, position.height, 8f)
-                    cb.setLineWidth(1f)
-                    cb.setColorStroke(colorDivider)
-                    cb.stroke()
-                }
-                
-                data.steps.forEachIndexed { index, step ->
+                val stepsContent = data.steps.mapIndexed { index, step ->
+                    val table = PdfPTable(1)
+                    table.widthPercentage = 100f
+                    val cell = PdfPCell()
+                    cell.border = Rectangle.NO_BORDER
+                    cell.setPadding(10f)
+                    cell.paddingLeft = 20f
+                    
+                    // Simple left accent for each step
+                    cell.cellEvent = PdfPCellEvent { _, position, canvases ->
+                        val cb = canvases[PdfPTable.LINECANVAS]
+                        cb.setColorFill(colorPrimaryBlue)
+                        cb.rectangle(position.left, position.bottom, 2f, position.height)
+                        cb.fill()
+                    }
+                    
                     val p = Paragraph("${index + 1}. $step", fontNormal)
-                    p.leading = 18f
-                    p.spacingAfter = 12f
+                    p.leading = 16f
                     cell.addElement(p)
+                    table.addCell(cell)
+                    table
                 }
-                stepsTable.addCell(cell)
-                addSection("3. Step-by-Step Instructions", listOf(stepsTable))
+                addSection("3. Step-by-Step Instructions", stepsContent)
             }
 
             // 6. IMPORTANT TIPS (Yellow Card with Orange Strip)
