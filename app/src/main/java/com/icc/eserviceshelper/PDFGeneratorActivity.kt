@@ -493,12 +493,27 @@ class PDFGeneratorActivity : AppCompatActivity() {
                     
                     c.setPadding(15f)
                     c.paddingLeft = 20f
-                    c.backgroundColor = colorTipBg
+                    // Remove cell background to draw it rounded in cellEvent
                     c.cellEvent = PdfPCellEvent { _, position, canvases ->
                         val cb = canvases[PdfPTable.LINECANVAS]
+                        
+                        // 1. Draw Rounded Background (Yellow)
+                        cb.roundRectangle(position.left, position.bottom, position.width, position.height, 6f)
+                        cb.setColorFill(colorTipBg)
+                        cb.fill()
+                        
+                        // 2. Draw Rounded Strip (Orange) using clipping to follow the box's curve
+                        cb.saveState()
+                        cb.roundRectangle(position.left, position.bottom, position.width, position.height, 6f)
+                        cb.clip()
+                        cb.newPath()
+                        
                         cb.setColorFill(colorTipStrip)
                         cb.rectangle(position.left, position.bottom, 4f, position.height)
                         cb.fill()
+                        cb.restoreState()
+                        
+                        // 3. Draw Outer Border (Grey)
                         cb.roundRectangle(position.left, position.bottom, position.width, position.height, 6f)
                         cb.setColorStroke(colorDivider)
                         cb.setLineWidth(0.5f)
