@@ -6,7 +6,7 @@
     <title>PDF Viewer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
     <style>
-        body { margin: 0; padding: 0; background-color: #525659; overflow: hidden; }
+        body { margin: 0; padding: 0; background-color: #f0f0f0; overflow: hidden; }
         #viewerContainer {
             position: absolute;
             overflow: auto;
@@ -14,11 +14,21 @@
             height: 100%;
             -webkit-overflow-scrolling: touch;
         }
+        /* Full width edge-to-edge styling */
         .pdfViewer .page {
-            margin: 10px auto;
-            border: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            margin: 0 auto 5px auto !important; /* Zero side margins */
+            border: none !important;
+            box-shadow: none !important;
+            width: 100% !important;
         }
+        .pdfViewer .canvasWrapper {
+            width: 100% !important;
+        }
+        .pdfViewer .page canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+
         #loadingIndicator {
             position: fixed;
             top: 50%;
@@ -81,9 +91,13 @@
         });
         linkService.setViewer(pdfViewer);
 
-        eventBus.on('pagesinit', function () {
+        // Force 'page-width' on initialization and window resize
+        function updateScale() {
             pdfViewer.currentScaleValue = 'page-width';
-        });
+        }
+
+        eventBus.on('pagesinit', updateScale);
+        window.addEventListener('resize', updateScale);
 
         function loadPdf(url) {
             document.getElementById('status').innerText = 'Downloading...';
