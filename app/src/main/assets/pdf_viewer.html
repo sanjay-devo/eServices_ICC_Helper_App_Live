@@ -2,11 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>PDF Viewer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
     <style>
-        body { margin: 0; padding: 0; background-color: #f0f0f0; overflow: hidden; }
+        :root {
+            --viewer-container-bg: #f0f0f0;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--viewer-container-bg);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
         #viewerContainer {
             position: absolute;
             overflow: auto;
@@ -14,19 +24,20 @@
             height: 100%;
             -webkit-overflow-scrolling: touch;
         }
-        /* Full width edge-to-edge styling */
+
+        /* Reset PDF.js styles to ensure edge-to-edge full width without clipping */
         .pdfViewer .page {
-            margin: 0 auto 5px auto !important; /* Zero side margins */
+            margin: 0 auto !important;
             border: none !important;
             box-shadow: none !important;
-            width: 100% !important;
+            background-color: white;
+            /* Ensure the page always takes full width but preserves A4 aspect ratio */
+            display: block;
         }
-        .pdfViewer .canvasWrapper {
-            width: 100% !important;
-        }
-        .pdfViewer .page canvas {
-            width: 100% !important;
-            height: auto !important;
+
+        /* Prevent side gaps and ensure the canvas fills the width properly */
+        .pdfViewer {
+            padding-bottom: 20px;
         }
 
         #loadingIndicator {
@@ -43,10 +54,11 @@
             text-align: center;
         }
 
-        /* Remove the yellow hover/highlight effect from PDF links */
+        /* Fully transparent links, no color, no hover */
         .annotationLayer .linkAnnotation > a {
             opacity: 0 !important;
             background-color: transparent !important;
+            outline: none !important;
         }
 
         .annotationLayer .linkAnnotation > a:hover {
@@ -54,9 +66,10 @@
             background-color: transparent !important;
         }
 
-        /* Ensure smooth interaction */
+        /* Global interaction fixes */
         * {
             -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
     </style>
 </head>
@@ -88,16 +101,27 @@
             useOnlyCssZoom: true,
             textLayerMode: 1,
             annotationMode: 1,
+            removePageBorders: true,
         });
         linkService.setViewer(pdfViewer);
 
-        // Force 'page-width' on initialization and window resize
-        function updateScale() {
-            pdfViewer.currentScaleValue = 'page-width';
+        // Precise scaling function to match container width
+        function fitToWidth() {
+            if (pdfViewer.pdfDocument) {
+                // Use 'page-width' which is the standard PDF.js way to fit A4/any page to container width
+                pdfViewer.currentScaleValue = 'page-width';
+            }
         }
 
-        eventBus.on('pagesinit', updateScale);
-        window.addEventListener('resize', updateScale);
+        eventBus.on('pagesinit', fitToWidth);
+        window.addEventListener('resize', fitToWidth);
+
+        // Refresh scale after pages are rendered to catch any layout shifts
+        eventBus.on('pagerendered', function(e) {
+            if (e.pageNumber === 1) {
+                fitToWidth();
+            }
+        });
 
         function loadPdf(url) {
             document.getElementById('status').innerText = 'Downloading...';
@@ -105,6 +129,8 @@
                 url: url,
                 cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
                 cMapPacked: true,
+                disableAutoFetch: false,
+                disableStream: false
             });
 
             loadingTask.promise.then(function(pdfDocument) {
@@ -128,7 +154,6 @@
             const target = e.target.closest('a');
             if (target && target.href) {
                 const href = target.href;
-                // If it's a real link (not an internal PDF link)
                 if (href.startsWith('http') || (href.includes(':') && !href.startsWith('blob:') && !href.includes('#'))) {
                     if (window.Android) {
                         window.Android.onLinkClick(href);
