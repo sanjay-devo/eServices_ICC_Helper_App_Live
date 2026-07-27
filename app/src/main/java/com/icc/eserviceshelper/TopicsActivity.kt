@@ -32,8 +32,9 @@ class TopicsActivity : AppCompatActivity() {
         val topics = category?.items?.values?.toList() ?: emptyList()
 
         adapter = TopicAdapter(topics) { topic ->
-            val intent = Intent(this, PdfOptionsActivity::class.java)
-            intent.putExtra("TOPIC", topic)
+            val intent = Intent(this, PdfViewerActivity::class.java)
+            intent.putExtra("PDF_URL", topic.pdf_url)
+            intent.putExtra("TITLE", topic.title)
             startActivity(intent)
         }
         binding.recyclerViewTopics.layoutManager = LinearLayoutManager(this)
