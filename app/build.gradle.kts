@@ -71,6 +71,7 @@ dependencies {
     // Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.webkit)
 
     implementation(libs.itextg)
     implementation(libs.gson)
