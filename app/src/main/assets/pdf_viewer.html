@@ -32,6 +32,22 @@
             border-radius: 10px;
             text-align: center;
         }
+
+        /* Remove the yellow hover/highlight effect from PDF links */
+        .annotationLayer .linkAnnotation > a {
+            opacity: 0 !important;
+            background-color: transparent !important;
+        }
+
+        .annotationLayer .linkAnnotation > a:hover {
+            opacity: 0 !important;
+            background-color: transparent !important;
+        }
+
+        /* Ensure smooth interaction */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
     </style>
 </head>
 <body>
