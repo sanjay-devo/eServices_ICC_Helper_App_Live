@@ -92,7 +92,7 @@ class PdfViewerActivity : AppCompatActivity() {
 
     private fun setupWebView() {
         val webView = binding.pdfWebView
-        
+
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
