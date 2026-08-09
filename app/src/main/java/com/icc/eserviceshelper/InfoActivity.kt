@@ -75,7 +75,7 @@ class InfoActivity : AppCompatActivity() {
         try {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:$email")
-                putExtra(Intent.EXTRA_SUBJECT, "Query - eServices ICC Helper")
+                putExtra(Intent.EXTRA_SUBJECT, "Query - eServices: India Cyber Cafe")
             }
             startActivity(Intent.createChooser(intent, "Send Email"))
         } catch (e: Exception) {

@@ -166,8 +166,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun shareApp() {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "text/plain"
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "eServices ICC Helper")
-        val shareMessage = "Simplify your access to government services with eServices ICC Helper! Get step-by-step guides for Aadhaar, PAN, Voter ID, Passport, and more. Download the app today: https://play.google.com/store/apps/details?id=${packageName}"
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "eServices: India Cyber Cafe")
+        val shareMessage = "Simplify your access to government services with eServices: India Cyber Cafe! Get step-by-step guides for Aadhaar, PAN, Voter ID, Passport, and more. Download the app today: https://play.google.com/store/apps/details?id=${packageName}"
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
         startActivity(Intent.createChooser(shareIntent, "Share via"))
     }
@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
             putExtra(Intent.EXTRA_EMAIL, arrayOf("icc@indiacybercafe.com"))
-            putExtra(Intent.EXTRA_SUBJECT, "Report Issue - eServices ICC Helper")
+            putExtra(Intent.EXTRA_SUBJECT, "Report Issue - eServices: India Cyber Cafe")
         }
         startActivity(Intent.createChooser(intent, "Send Email"))
     }

@@ -43,8 +43,8 @@ object ContentProvider {
 
     private fun getAboutItems(): List<InfoItem> = listOf(
         InfoItem.Section(
-            "WELCOME TO ESERVICES ICC HELPER",
-            "eServices ICC Helper is designed to be your ultimate digital companion for navigating the complex landscape of government and digital services in India.",
+            "WELCOME TO ESERVICES: INDIA CYBER CAFE",
+            "eServices: India Cyber Cafe is designed to be your ultimate digital companion for navigating the complex landscape of government and digital services in India.",
             R.drawable.ic_info
         ),
         InfoItem.Section(
@@ -77,7 +77,7 @@ object ContentProvider {
     private fun getPrivacyItems(): List<InfoItem> = listOf(
         InfoItem.Section(
             "Introduction",
-            "eServices ICC Helper respects your privacy. This policy describes the types of information we may collect from you or that you may provide.",
+            "eServices: India Cyber Cafe respects your privacy. This policy describes the types of information we may collect from you or that you may provide.",
             R.drawable.ic_privacy_tip
         ),
         InfoItem.Section(
@@ -111,7 +111,7 @@ object ContentProvider {
     private fun getTermsItems(): List<InfoItem> = listOf(
         InfoItem.Section(
             "Acceptance of Terms",
-            "By downloading and using eServices ICC Helper, you agree to be bound by these Terms and Conditions.",
+            "By downloading and using eServices: India Cyber Cafe, you agree to be bound by these Terms and Conditions.",
             R.drawable.ic_description
         ),
         InfoItem.Section(
@@ -121,7 +121,7 @@ object ContentProvider {
         ),
         InfoItem.Section(
             "Limitation of Liability",
-            "eServices ICC Helper is not liable for any damages arising out of your use of the application. The app is an informational tool only.",
+            "eServices: India Cyber Cafe is not liable for any damages arising out of your use of the application. The app is an informational tool only.",
             R.drawable.ic_warning,
             isWarning = true
         ),
@@ -135,7 +135,7 @@ object ContentProvider {
     private fun getDisclaimerItems(): List<InfoItem> = listOf(
         InfoItem.Section(
             "Official Status",
-            "eServices ICC Helper is an independent, private application. It is NOT affiliated with, endorsed by, or connected to any government department.",
+            "eServices: India Cyber Cafe is an independent, private application. It is NOT affiliated with, endorsed by, or connected to any government department.",
             R.drawable.ic_warning,
             isWarning = true
         ),
@@ -234,7 +234,7 @@ object ContentProvider {
     )
 
     private fun getAppInfoItems(): List<InfoItem> = listOf(
-        InfoItem.AppInfo("App Name", "eServices ICC Helper", R.drawable.ic_info),
+        InfoItem.AppInfo("App Name", "eServices: India Cyber Cafe", R.drawable.ic_info),
         InfoItem.AppInfo("Current Version", "1.1.2", R.drawable.ic_new_releases),
         InfoItem.AppInfo("Build Number", "5", R.drawable.ic_description),
         InfoItem.AppInfo("Last Updated", "July 2026", R.drawable.ic_system_update),

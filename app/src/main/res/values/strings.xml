@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">eServices ICC Helper</string>
+    <string name="app_name">eServices: India Cyber Cafe</string>
+    <string name="nav_header_title">eServices:</string>
+    <string name="nav_header_subtitle">India Cyber Cafe</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
 </resources>

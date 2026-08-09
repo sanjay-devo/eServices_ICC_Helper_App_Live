@@ -234,7 +234,7 @@ class PdfViewerActivity : AppCompatActivity() {
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setDestinationInExternalPublicDir(
                     Environment.DIRECTORY_DOWNLOADS,
-                    "eServices_ICC_Helper/${title.replace(" ", "_")}.pdf"
+                    "eServices_India_Cyber_Cafe/${title.replace(" ", "_")}.pdf"
                 )
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
