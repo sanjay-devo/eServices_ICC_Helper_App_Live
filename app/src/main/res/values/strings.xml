@@ -28,4 +28,9 @@
     <string name="label_mobile_number">Mobile Number</string>
     <string name="label_date_time">Date &amp; Time</string>
     <string name="desc_expand">Expand or collapse</string>
+    <string name="msg_loading_pdf">Loading PDF</string>
+    <string name="status_preparing">Preparing document...</string>
+    <string name="status_loading_pages">Loading pages...</string>
+    <string name="error_pdf_failed">Failed to load PDF</string>
+    <string name="btn_retry">Retry</string>
 </resources>

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
     <style>
         :root {
-            --viewer-container-bg: #f0f0f0;
+            --viewer-container-bg: #F5ECDD; /* Matches app background_cream */
         }
         body {
             margin: 0;
@@ -23,38 +23,22 @@
             width: 100%;
             height: 100%;
             -webkit-overflow-scrolling: touch;
+            visibility: hidden; /* Start hidden */
         }
 
-        /* Reset PDF.js styles to ensure edge-to-edge full width without clipping */
         .pdfViewer .page {
             margin: 0 auto !important;
             border: none !important;
-            box-shadow: none !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
             background-color: white;
-            /* Ensure the page always takes full width but preserves A4 aspect ratio */
             display: block;
         }
 
-        /* Prevent side gaps and ensure the canvas fills the width properly */
         .pdfViewer {
             padding-bottom: 20px;
         }
 
-        #loadingIndicator {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-family: sans-serif;
-            z-index: 1000;
-            background: rgba(0,0,0,0.7);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        /* Fully transparent links, no color, no hover */
+        /* Fully transparent links */
         .annotationLayer .linkAnnotation > a {
             opacity: 0 !important;
             background-color: transparent !important;
@@ -66,7 +50,6 @@
             background-color: transparent !important;
         }
 
-        /* Global interaction fixes */
         * {
             -webkit-tap-highlight-color: transparent;
             outline: none;
@@ -74,7 +57,6 @@
     </style>
 </head>
 <body>
-    <div id="loadingIndicator">Loading PDF...<br><small id="status">Starting...</small></div>
     <div id="viewerContainer">
         <div id="viewer" class="pdfViewer"></div>
     </div>
@@ -105,10 +87,8 @@
         });
         linkService.setViewer(pdfViewer);
 
-        // Precise scaling function to match container width
         function fitToWidth() {
             if (pdfViewer.pdfDocument) {
-                // Use 'page-width' which is the standard PDF.js way to fit A4/any page to container width
                 pdfViewer.currentScaleValue = 'page-width';
             }
         }
@@ -116,15 +96,14 @@
         eventBus.on('pagesinit', fitToWidth);
         window.addEventListener('resize', fitToWidth);
 
-        // Refresh scale after pages are rendered to catch any layout shifts
-        eventBus.on('pagerendered', function(e) {
-            if (e.pageNumber === 1) {
-                fitToWidth();
+        eventBus.on('pagesloaded', function() {
+            container.style.visibility = 'visible';
+            if (window.Android && window.Android.onDocumentReady) {
+                window.Android.onDocumentReady();
             }
         });
 
         function loadPdf(url) {
-            document.getElementById('status').innerText = 'Downloading...';
             const loadingTask = pdfjsLib.getDocument({
                 url: url,
                 cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
@@ -136,7 +115,6 @@
             loadingTask.promise.then(function(pdfDocument) {
                 pdfViewer.setDocument(pdfDocument);
                 linkService.setDocument(pdfDocument, null);
-                document.getElementById('loadingIndicator').style.display = 'none';
             }, function (reason) {
                 showError(reason);
             });
@@ -144,7 +122,6 @@
 
         function showError(reason) {
             console.error('Error: ', reason);
-            document.getElementById('loadingIndicator').innerHTML = 'Error loading PDF<br><small>' + (reason.message || reason) + '</small>';
             if (window.Android) {
                 window.Android.onError(reason.message || reason.toString());
             }

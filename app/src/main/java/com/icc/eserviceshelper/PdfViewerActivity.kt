@@ -27,13 +27,14 @@ class PdfViewerActivity : AppCompatActivity() {
     private var pendingPdfUrl: String? = null
     private lateinit var assetLoader: WebViewAssetLoader
     private lateinit var pdfCacheDir: File
+    private var currentPdfUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPdfViewerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val pdfUrl = intent.getStringExtra("PDF_URL")
+        currentPdfUrl = intent.getStringExtra("PDF_URL")
         val title = intent.getStringExtra("TITLE")
         val categoryTitle = intent.getStringExtra("CATEGORY_TITLE")
 
@@ -45,6 +46,10 @@ class PdfViewerActivity : AppCompatActivity() {
             applyIntent.putExtra("SERVICE_TITLE", categoryTitle)
             applyIntent.putExtra("SUBSERVICE_TITLE", title)
             startActivity(applyIntent)
+        }
+
+        binding.btnRetry.setOnClickListener {
+            currentPdfUrl?.let { downloadAndLoadPdf(it) }
         }
 
         // Handle back button using OnBackPressedDispatcher
@@ -70,18 +75,16 @@ class PdfViewerActivity : AppCompatActivity() {
                 .addPathHandler("/pdf_cache/", WebViewAssetLoader.InternalStoragePathHandler(this, pdfCacheDir))
                 .build()
         } catch (e: Exception) {
-            Toast.makeText(this, "Failed to initialize PDF viewer: ${e.message}", Toast.LENGTH_LONG).show()
-            finish()
+            showError("Failed to initialize PDF viewer: ${e.message}")
             return
         }
 
         setupWebView()
 
-        if (pdfUrl != null) {
-            downloadAndLoadPdf(pdfUrl)
+        if (currentPdfUrl != null) {
+            downloadAndLoadPdf(currentPdfUrl!!)
         } else {
-            Toast.makeText(this, "Invalid PDF URL", Toast.LENGTH_SHORT).show()
-            finish()
+            showError("Invalid PDF URL")
         }
     }
 
@@ -112,8 +115,14 @@ class PdfViewerActivity : AppCompatActivity() {
             @JavascriptInterface
             fun onError(error: String) {
                 runOnUiThread {
-                    Toast.makeText(this@PdfViewerActivity, "PDF Error: $error", Toast.LENGTH_LONG).show()
-                    binding.progressBar.visibility = View.GONE
+                    showError("PDF Error: $error")
+                }
+            }
+
+            @JavascriptInterface
+            fun onDocumentReady() {
+                runOnUiThread {
+                    hideLoading()
                 }
             }
         }, "Android")
@@ -125,7 +134,6 @@ class PdfViewerActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 isViewerLoaded = true
-                binding.progressBar.visibility = View.GONE
                 pendingPdfUrl?.let {
                     loadPdfInWebView(it)
                     pendingPdfUrl = null
@@ -134,8 +142,7 @@ class PdfViewerActivity : AppCompatActivity() {
 
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                 if (request?.isForMainFrame == true) {
-                    Toast.makeText(this@PdfViewerActivity, "Failed to load PDF viewer", Toast.LENGTH_SHORT).show()
-                    binding.progressBar.visibility = View.GONE
+                    showError("Failed to load PDF viewer system")
                 }
             }
         }
@@ -145,7 +152,8 @@ class PdfViewerActivity : AppCompatActivity() {
     }
 
     private fun downloadAndLoadPdf(url: String) {
-        binding.progressBar.visibility = View.VISIBLE
+        showLoading()
+        binding.tvLoadingStatus.text = getString(R.string.status_preparing)
         
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -154,6 +162,10 @@ class PdfViewerActivity : AppCompatActivity() {
 
                 if (!localFile.exists()) {
                     downloadFile(url, localFile)
+                }
+
+                withContext(Dispatchers.Main) {
+                    binding.tvLoadingStatus.text = getString(R.string.status_loading_pages)
                 }
 
                 // The path for AssetLoader - matches the "/pdf_cache/" handler
@@ -168,8 +180,7 @@ class PdfViewerActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(this@PdfViewerActivity, "Failed to load PDF: ${e.message}", Toast.LENGTH_LONG).show()
+                    showError("Failed to load PDF: ${e.message}")
                 }
             }
         }
@@ -196,6 +207,32 @@ class PdfViewerActivity : AppCompatActivity() {
 
     private fun loadPdfInWebView(internalUrl: String) {
         binding.pdfWebView.evaluateJavascript("loadPdf('$internalUrl')", null)
+    }
+
+    private fun showLoading() {
+        binding.layoutLoading.visibility = View.VISIBLE
+        binding.layoutError.visibility = View.GONE
+        binding.pdfWebView.visibility = View.GONE
+    }
+
+    private fun hideLoading() {
+        binding.layoutLoading.animate()
+            .alpha(0f)
+            .setDuration(300)
+            .withEndAction {
+                binding.layoutLoading.visibility = View.GONE
+                binding.layoutLoading.alpha = 1f
+                binding.pdfWebView.visibility = View.VISIBLE
+                binding.pdfWebView.alpha = 0f
+                binding.pdfWebView.animate().alpha(1f).setDuration(300).start()
+            }.start()
+    }
+
+    private fun showError(message: String) {
+        binding.layoutLoading.visibility = View.GONE
+        binding.layoutError.visibility = View.VISIBLE
+        binding.pdfWebView.visibility = View.GONE
+        binding.tvErrorMsg.text = message
     }
 
     private fun handleUri(uri: Uri): Boolean {
