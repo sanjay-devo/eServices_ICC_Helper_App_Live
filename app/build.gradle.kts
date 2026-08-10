@@ -60,6 +60,7 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.auth.ktx)
 
     // Glide
     implementation(libs.glide)
@@ -67,6 +68,7 @@ dependencies {
 
     // PDF Viewer Replacement
     implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.swiperefreshlayout)
 
     // Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

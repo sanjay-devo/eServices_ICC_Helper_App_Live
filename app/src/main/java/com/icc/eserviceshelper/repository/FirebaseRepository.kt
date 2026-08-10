@@ -3,6 +3,7 @@ package com.icc.eserviceshelper.repository
 import com.google.firebase.database.*
 import com.icc.eserviceshelper.models.Category
 import com.icc.eserviceshelper.models.ServiceItem
+import com.icc.eserviceshelper.models.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -65,6 +66,51 @@ class FirebaseRepository {
         awaitClose { categoriesRef.removeEventListener(listener) }
     }.flowOn(Dispatchers.IO)
 
+    fun getOrders(): Flow<Result<List<Order>>> = callbackFlow {
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                launch(Dispatchers.Default) {
+                    try {
+                        val ordersList = mutableListOf<Order>()
+                        for (orderSnapshot in snapshot.children) {
+                            val order = orderSnapshot.getValue(Order::class.java)
+                            if (order != null) {
+                                ordersList.add(order)
+                            }
+                        }
+                        // Sort by timestamp descending (newest first)
+                        ordersList.sortByDescending { it.timestamp }
+                        trySend(Result.success(ordersList))
+                    } catch (e: Exception) {
+                        trySend(Result.failure(e))
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                trySend(Result.failure(error.toException()))
+            }
+        }
+        ordersRef.addValueEventListener(listener)
+        awaitClose { ordersRef.removeEventListener(listener) }
+    }.flowOn(Dispatchers.IO)
+
+    suspend fun updateOrderStatus(orderId: String, newStatus: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            suspendCancellableCoroutine { continuation ->
+                ordersRef.child(orderId).child("status").setValue(newStatus)
+                    .addOnSuccessListener {
+                        continuation.resume(Result.success(Unit))
+                    }
+                    .addOnFailureListener {
+                        continuation.resume(Result.failure(it))
+                    }
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun applyForService(
         serviceTitle: String,
         subserviceTitle: String,
@@ -79,7 +125,8 @@ class FirebaseRepository {
                 "subservice" to subserviceTitle,
                 "userName" to userName,
                 "mobileNumber" to mobileNumber,
-                "timestamp" to ServerValue.TIMESTAMP
+                "timestamp" to ServerValue.TIMESTAMP,
+                "status" to Order.STATUS_PENDING
             )
             
             suspendCancellableCoroutine { continuation ->

@@ -54,6 +54,17 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:label="Admin Login"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".OrdersActivity"
+            android:exported="false"
+            android:label="Admin Orders" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

@@ -14,4 +14,18 @@
     <string name="hint_subservice">Subservice</string>
     <string name="error_invalid_service">Please select a service</string>
     <string name="error_invalid_subservice">Please select a subservice</string>
+    <string name="title_admin_login">Admin Login</string>
+    <string name="title_admin_orders">Admin Orders</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="error_email_required">Email is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="msg_auth_failed">Authentication failed</string>
+    <string name="msg_no_orders">No orders found</string>
+    <string name="action_logout">Logout</string>
+    <string name="hint_update_status">Update Status</string>
+    <string name="label_mobile_number">Mobile Number</string>
+    <string name="label_date_time">Date &amp; Time</string>
+    <string name="desc_expand">Expand or collapse</string>
 </resources>

@@ -17,6 +17,7 @@ openpdf = "2.0.3"
 itextg = "5.5.10"
 gson = "2.11.0"
 webkit = "1.12.1"
+swiperefreshlayout = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,6 +32,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx" }
 
 # Glide
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
@@ -46,6 +48,7 @@ openpdf = { group = "com.github.librepdf", name = "openpdf", version.ref = "open
 itextg = { group = "com.itextpdf", name = "itextg", version.ref = "itextg" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
