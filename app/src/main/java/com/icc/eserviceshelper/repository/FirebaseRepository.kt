@@ -9,9 +9,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
+import com.google.firebase.database.ServerValue
 
 class FirebaseRepository {
-    private val database = FirebaseDatabase.getInstance("https://eservices-icc-helper-app-default-rtdb.firebaseio.com/").reference.child("categories")
+    private val database = FirebaseDatabase.getInstance("https://eservices-icc-helper-app-default-rtdb.firebaseio.com/").reference
+    private val categoriesRef = database.child("categories")
+    private val ordersRef = database.child("orders")
 
     fun getCategories(): Flow<Result<List<Category>>> = callbackFlow {
         val listener = object : ValueEventListener {
@@ -55,7 +61,38 @@ class FirebaseRepository {
                 trySend(Result.failure(error.toException()))
             }
         }
-        database.addValueEventListener(listener)
-        awaitClose { database.removeEventListener(listener) }
+        categoriesRef.addValueEventListener(listener)
+        awaitClose { categoriesRef.removeEventListener(listener) }
     }.flowOn(Dispatchers.IO)
+
+    suspend fun applyForService(
+        serviceTitle: String,
+        subserviceTitle: String,
+        userName: String,
+        mobileNumber: String
+    ): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val orderId = ordersRef.push().key ?: return@withContext Result.failure(Exception("Failed to generate order ID"))
+            val order = mapOf(
+                "id" to orderId,
+                "service" to serviceTitle,
+                "subservice" to subserviceTitle,
+                "userName" to userName,
+                "mobileNumber" to mobileNumber,
+                "timestamp" to ServerValue.TIMESTAMP
+            )
+            
+            suspendCancellableCoroutine { continuation ->
+                ordersRef.child(orderId).setValue(order)
+                    .addOnSuccessListener {
+                        continuation.resume(Result.success(Unit))
+                    }
+                    .addOnFailureListener {
+                        continuation.resume(Result.failure(it))
+                    }
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

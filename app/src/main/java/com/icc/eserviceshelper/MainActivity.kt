@@ -38,6 +38,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setupSearchView()
         observeViewModel()
         setupBackPress()
+        setupApplyFab()
+    }
+
+    private fun setupApplyFab() {
+        binding.layoutFabApply.fabApply.setOnClickListener {
+            val intent = Intent(this, ApplyActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupBackPress() {

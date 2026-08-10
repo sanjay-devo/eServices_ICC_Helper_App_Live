@@ -35,9 +35,17 @@ class PdfViewerActivity : AppCompatActivity() {
 
         val pdfUrl = intent.getStringExtra("PDF_URL")
         val title = intent.getStringExtra("TITLE")
+        val categoryTitle = intent.getStringExtra("CATEGORY_TITLE")
 
         binding.toolbar.title = title ?: "PDF Viewer"
         binding.toolbar.setNavigationOnClickListener { finish() }
+
+        binding.layoutFabApply.fabApply.setOnClickListener {
+            val applyIntent = Intent(this, ApplyActivity::class.java)
+            applyIntent.putExtra("SERVICE_TITLE", categoryTitle)
+            applyIntent.putExtra("SUBSERVICE_TITLE", title)
+            startActivity(applyIntent)
+        }
 
         // Handle back button using OnBackPressedDispatcher
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

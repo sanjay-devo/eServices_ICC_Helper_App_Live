@@ -5,4 +5,13 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="btn_apply">Apply</string>
+    <string name="hint_full_name">Full Name</string>
+    <string name="hint_mobile_number">Mobile Number</string>
+    <string name="error_invalid_name">Please enter your name</string>
+    <string name="error_invalid_mobile">Please enter a valid 10-digit mobile number</string>
+    <string name="msg_apply_success">Application submitted successfully!</string>
+    <string name="hint_service">Service</string>
+    <string name="hint_subservice">Subservice</string>
+    <string name="error_invalid_service">Please select a service</string>
+    <string name="error_invalid_subservice">Please select a subservice</string>
 </resources>

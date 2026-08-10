@@ -33,4 +33,8 @@
         app:layout_constraintTop_toBottomOf="@id/appBarLayout"
         tools:listitem="@layout/item_topic" />
 
+    <include
+        android:id="@+id/layoutFabApply"
+        layout="@layout/layout_apply_fab" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
