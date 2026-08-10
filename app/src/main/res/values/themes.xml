@@ -1,17 +1,44 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.EServicesICCHelper" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="colorPrimary">@color/md_theme_light_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/md_theme_light_secondary</item>
-        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+    <style name="Base.Theme.EServicesICCHelper" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Primary actions/buttons -->
+        <item name="colorPrimary">@color/primary_dark_brown</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/light_accent</item>
+        <item name="colorOnPrimaryContainer">@color/primary_dark_brown</item>
 
-        <item name="android:statusBarColor">@color/md_theme_light_primary</item>
+        <!-- Secondary actions -->
+        <item name="colorSecondary">@color/secondary_brown</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/divider_color</item>
+        <item name="colorOnSecondaryContainer">@color/text_primary</item>
+
+        <!-- Highlights/selected states -->
+        <item name="colorTertiary">@color/accent_gold</item>
+        <item name="colorOnTertiary">@color/text_primary</item>
+        <item name="colorTertiaryContainer">@color/light_accent</item>
+        <item name="colorOnTertiaryContainer">@color/text_primary</item>
+
+        <!-- Background and Surfaces -->
+        <item name="android:windowBackground">@color/background_cream</item>
+        <item name="colorSurface">@color/surface_card</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorSurfaceVariant">@color/surface_card</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+
+        <!-- Dividers and Borders -->
+        <item name="colorOutline">@color/divider_color</item>
+        <item name="colorOutlineVariant">@color/divider_color</item>
+
+        <!-- Success, Warning, Error -->
+        <item name="colorError">@color/error_color</item>
+        <item name="colorOnError">@color/white</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/primary_dark_brown</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 

@@ -82,7 +82,7 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_menu"
-        app:itemIconTint="@color/md_theme_light_primary"
-        app:itemTextColor="@color/black" />
+        app:itemIconTint="?attr/colorPrimary"
+        app:itemTextColor="@color/text_primary" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

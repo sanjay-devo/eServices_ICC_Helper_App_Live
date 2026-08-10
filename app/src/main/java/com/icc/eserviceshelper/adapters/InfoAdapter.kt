@@ -64,15 +64,15 @@ class InfoAdapter(
             }
 
             if (item.isWarning) {
-                binding.cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.md_theme_light_primaryContainer))
-                binding.tvTitle.setTextColor(ContextCompat.getColor(itemView.context, R.color.md_theme_light_onPrimaryContainer))
-                binding.tvContent.setTextColor(ContextCompat.getColor(itemView.context, R.color.md_theme_light_onPrimaryContainer))
-                binding.ivIcon.setColorFilter(ContextCompat.getColor(itemView.context, R.color.md_theme_light_onPrimaryContainer))
+                binding.cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.light_accent))
+                binding.tvTitle.setTextColor(ContextCompat.getColor(itemView.context, R.color.primary_dark_brown))
+                binding.tvContent.setTextColor(ContextCompat.getColor(itemView.context, R.color.text_primary))
+                binding.ivIcon.setColorFilter(ContextCompat.getColor(itemView.context, R.color.primary_dark_brown))
             } else {
-                binding.cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
-                binding.tvTitle.setTextColor(ContextCompat.getColor(itemView.context, R.color.md_theme_light_primary))
-                binding.tvContent.setTextColor(ContextCompat.getColor(itemView.context, R.color.black))
-                binding.ivIcon.setColorFilter(ContextCompat.getColor(itemView.context, R.color.md_theme_light_primary))
+                binding.cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.surface_card))
+                binding.tvTitle.setTextColor(ContextCompat.getColor(itemView.context, R.color.primary_dark_brown))
+                binding.tvContent.setTextColor(ContextCompat.getColor(itemView.context, R.color.text_primary))
+                binding.ivIcon.setColorFilter(ContextCompat.getColor(itemView.context, R.color.primary_dark_brown))
             }
         }
     }
