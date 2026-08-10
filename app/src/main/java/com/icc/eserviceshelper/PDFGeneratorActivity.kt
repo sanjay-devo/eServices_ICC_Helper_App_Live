@@ -300,16 +300,30 @@ class PDFGeneratorActivity : AppCompatActivity() {
             val colorTipStrip = BaseColor(255, 179, 0) // Orange
             val colorDivider = BaseColor(224, 224, 224) // Light Grey
             
-            val baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED)
-            val fontTitle = Font(baseFont, 22f, Font.BOLD, colorPrimaryBlue)
-            val fontSubtitle = Font(baseFont, 12f, Font.NORMAL, colorGreyText)
-            val fontSectionHeader = Font(baseFont, 14f, Font.BOLD, colorPrimaryBlue)
-            val fontBold = Font(baseFont, 11f, Font.BOLD, BaseColor.BLACK)
-            val fontNormal = Font(baseFont, 11f, Font.NORMAL, BaseColor.BLACK)
-            val fontFooterTitle = Font(baseFont, 10f, Font.BOLD, colorGreyText)
-            val fontFooterSub = Font(baseFont, 9f, Font.NORMAL, colorGreyText)
-            val fontButton = Font(baseFont, 14f, Font.BOLD, BaseColor.WHITE) // Increased font size for a bigger button
-            val fontLink = Font(baseFont, 11f, Font.NORMAL, colorPrimaryBlue)
+            // Helper to load Poppins from assets
+            fun getPoppinsBase(style: String): BaseFont {
+                return try {
+                    val fontPath = "fonts/Poppins-$style.ttf"
+                    val inputStream = assets.open(fontPath)
+                    val fontBytes = inputStream.readBytes()
+                    BaseFont.createFont("Poppins-$style.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, true, fontBytes, null)
+                } catch (e: Exception) {
+                    BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED)
+                }
+            }
+
+            val baseFontRegular = getPoppinsBase("Regular")
+            val baseFontBold = getPoppinsBase("Bold")
+            
+            val fontTitle = Font(baseFontBold, 22f, Font.NORMAL, colorPrimaryBlue)
+            val fontSubtitle = Font(baseFontRegular, 12f, Font.NORMAL, colorGreyText)
+            val fontSectionHeader = Font(baseFontBold, 14f, Font.NORMAL, colorPrimaryBlue)
+            val fontBold = Font(baseFontBold, 11f, Font.NORMAL, BaseColor.BLACK)
+            val fontNormal = Font(baseFontRegular, 11f, Font.NORMAL, BaseColor.BLACK)
+            val fontFooterTitle = Font(baseFontBold, 10f, Font.NORMAL, colorGreyText)
+            val fontFooterSub = Font(baseFontRegular, 9f, Font.NORMAL, colorGreyText)
+            val fontButton = Font(baseFontBold, 14f, Font.NORMAL, BaseColor.WHITE) // Increased font size for a bigger button
+            val fontLink = Font(baseFontRegular, 11f, Font.NORMAL, colorPrimaryBlue)
 
             document.open()
 
