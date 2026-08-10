@@ -1,28 +1,64 @@
 package com.icc.eserviceshelper.viewmodels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.icc.eserviceshelper.models.Category
+import com.icc.eserviceshelper.repository.CategoryCache
 import com.icc.eserviceshelper.repository.FirebaseRepository
 import com.icc.eserviceshelper.utils.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = FirebaseRepository()
+    private val cache = CategoryCache(application)
     
     private val _searchQuery = MutableStateFlow("")
-    
-    // Original data from Firebase converted to UiState
-    private val _allCategories = repository.getCategories()
-        .map { result ->
-            result.fold(
-                onSuccess = { UiState.Success(it) },
-                onFailure = { UiState.Error(it.message ?: "Unknown error") }
-            )
+    private val _allCategories = MutableStateFlow<UiState<List<Category>>>(UiState.Loading)
+
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
+        viewModelScope.launch {
+            // 1. Show cached data instantly if available
+            val cachedData = cache.getCachedCategories()
+            if (cachedData != null) {
+                _allCategories.value = UiState.Success(cachedData)
+            } else {
+                _allCategories.value = UiState.Loading
+            }
+
+            // 2. Silently check Firebase version in background
+            val remoteVersion = repository.getRemoteVersion()
+            val cachedVersion = cache.getCachedVersion()
+
+            // If remote is unavailable or data is same version, do nothing
+            if ((remoteVersion != -1L) && (remoteVersion != cachedVersion)) {
+                // 3. Version changed, fetch latest data
+                repository.getCategoriesOnce()
+                    .onSuccess { (categories, version) ->
+                        // Only refresh UI if data actually changed
+                        if (categories != cachedData) {
+                            cache.saveCategories(categories, version)
+                            _allCategories.value = UiState.Success(categories)
+                        }
+                    }
+                    .onFailure {
+                        if (cachedData == null) {
+                            _allCategories.value = UiState.Error(it.message ?: "Connection failed")
+                        }
+                    }
+            } else if (cachedData == null && remoteVersion == -1L) {
+                // Error state only if no cache and no internet
+                _allCategories.value = UiState.Error("No internet connection")
+            }
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, UiState.Loading)
+    }
 
     // Filtered data computed on a background thread, maintaining UiState
     val filteredCategories = combine(_allCategories, _searchQuery) { state, query ->

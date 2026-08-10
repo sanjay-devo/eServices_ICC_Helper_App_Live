@@ -1,6 +1,7 @@
 package com.icc.eserviceshelper.repository
 
 import com.google.firebase.database.*
+import com.google.android.gms.tasks.Task
 import com.icc.eserviceshelper.models.Category
 import com.icc.eserviceshelper.models.ServiceItem
 import com.icc.eserviceshelper.models.Order
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import com.google.firebase.database.ServerValue
 
@@ -19,6 +21,65 @@ class FirebaseRepository {
     private val database = FirebaseDatabase.getInstance("https://eservices-icc-helper-app-default-rtdb.firebaseio.com/").reference
     private val categoriesRef = database.child("categories")
     private val ordersRef = database.child("orders")
+    private val configRef = database.child("config")
+
+    suspend fun getCategoriesOnce(): Result<Pair<List<Category>, Long>> = withContext(Dispatchers.IO) {
+        try {
+            val snapshot = categoriesRef.get().await() as DataSnapshot
+            val versionSnapshot = configRef.child("categories_version").get().await() as DataSnapshot
+            val version = versionSnapshot.getValue(Long::class.java) ?: 0L
+            
+            val categoriesList = mutableListOf<Category>()
+            snapshot.children.forEach { categorySnapshot ->
+                val title = categorySnapshot.child("title").getValue(String::class.java) ?: ""
+                val iconUrl = categorySnapshot.child("icon_url").getValue(String::class.java) ?: ""
+                
+                val itemsMap = LinkedHashMap<String, ServiceItem>()
+                categorySnapshot.child("items").children.forEach { itemSnapshot ->
+                    val item = itemSnapshot.getValue(ServiceItem::class.java)?.copy(id = itemSnapshot.key ?: "")
+                    if (item != null) {
+                        itemsMap[itemSnapshot.key ?: ""] = item
+                    }
+                }
+
+                categoriesList.add(
+                    Category(
+                        id = categorySnapshot.key ?: "",
+                        title = title,
+                        icon_url = iconUrl,
+                        items = itemsMap
+                    )
+                )
+            }
+            Result.success(Pair(categoriesList, version))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getRemoteVersion(): Long = withContext(Dispatchers.IO) {
+        try {
+            val snapshot = configRef.child("categories_version").get().await() as DataSnapshot
+            snapshot.getValue(Long::class.java) ?: 0L
+        } catch (e: Exception) {
+            -1L
+        }
+    }
+
+    private suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
+        addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val result = task.result
+                if (result != null) {
+                    continuation.resume(result)
+                } else {
+                    continuation.resumeWithException(Exception("Result is null"))
+                }
+            } else {
+                continuation.resumeWithException(task.exception ?: Exception("Unknown error"))
+            }
+        }
+    }
 
     fun getCategories(): Flow<Result<List<Category>>> = callbackFlow {
         val listener = object : ValueEventListener {
