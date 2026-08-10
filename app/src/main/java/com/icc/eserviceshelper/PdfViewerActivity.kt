@@ -1,11 +1,9 @@
 package com.icc.eserviceshelper
 
-import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.view.View
 import android.webkit.*
 import android.widget.Toast
@@ -40,17 +38,6 @@ class PdfViewerActivity : AppCompatActivity() {
 
         binding.toolbar.title = title ?: "PDF Viewer"
         binding.toolbar.setNavigationOnClickListener { finish() }
-
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            if (menuItem.itemId == R.id.action_download) {
-                if (pdfUrl != null) {
-                    downloadPdf(pdfUrl, title ?: "Document")
-                }
-                true
-            } else {
-                false
-            }
-        }
 
         // Handle back button using OnBackPressedDispatcher
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -223,27 +210,6 @@ class PdfViewerActivity : AppCompatActivity() {
                 Toast.makeText(this, "No application found for this link", Toast.LENGTH_SHORT).show()
                 false
             }
-        }
-    }
-
-    private fun downloadPdf(url: String, title: String) {
-        try {
-            val request = DownloadManager.Request(Uri.parse(url))
-                .setTitle(title)
-                .setDescription("Downloading PDF guide...")
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setDestinationInExternalPublicDir(
-                    Environment.DIRECTORY_DOWNLOADS,
-                    "eServices_India_Cyber_Cafe/${title.replace(" ", "_")}.pdf"
-                )
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true)
-
-            val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            downloadManager.enqueue(request)
-            Toast.makeText(this, "Download started...", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Failed to start download: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 

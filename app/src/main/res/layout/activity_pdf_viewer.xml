@@ -20,8 +20,7 @@
             android:background="?attr/colorPrimary"
             app:navigationIcon="@drawable/ic_back"
             app:title="PDF Viewer"
-            app:titleTextColor="@color/white"
-            app:menu="@menu/menu_pdf_viewer" />
+            app:titleTextColor="@color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -31,6 +30,21 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnApply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/btn_apply"
+        android:padding="14dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:elevation="4dp" />
 
     <ProgressBar
         android:id="@+id/progressBar"
