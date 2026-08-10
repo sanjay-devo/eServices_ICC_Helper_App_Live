@@ -235,9 +235,9 @@ object ContentProvider {
 
     private fun getAppInfoItems(): List<InfoItem> = listOf(
         InfoItem.AppInfo("App Name", "eServices: India Cyber Cafe", R.drawable.ic_info),
-        InfoItem.AppInfo("Current Version", "1.1.3", R.drawable.ic_new_releases),
-        InfoItem.AppInfo("Build Number", "6", R.drawable.ic_description),
-        InfoItem.AppInfo("Last Updated", "July 2026", R.drawable.ic_system_update),
+        InfoItem.AppInfo("Current Version", "1.1.4", R.drawable.ic_new_releases),
+        InfoItem.AppInfo("Build Number", "7", R.drawable.ic_description),
+        InfoItem.AppInfo("Last Updated", "Aug 2026", R.drawable.ic_system_update),
         InfoItem.AppInfo("Package Name", "com.icc.eserviceshelper", R.drawable.ic_public)
     )
 
