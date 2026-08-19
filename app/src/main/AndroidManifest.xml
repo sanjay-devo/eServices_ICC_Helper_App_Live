@@ -65,6 +65,11 @@
             android:exported="false"
             android:label="Admin Orders" />
 
+        <activity
+            android:name=".DukansActivity"
+            android:exported="false"
+            android:theme="@style/Theme.EServicesICCHelper" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

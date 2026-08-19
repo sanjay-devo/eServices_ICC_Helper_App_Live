@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -83,8 +84,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         binding.navView.setNavigationItemSelectedListener(this)
         
-        // Material 3 style: remove icon tint if you want original colors, 
-        // but here we want to match the theme.
+        // Setup long press on app icon in navigation drawer
+        val headerView = binding.navView.getHeaderView(0)
+        val appIcon = headerView.findViewById<ImageView>(R.id.imageView)
+        appIcon.setOnLongClickListener {
+            val intent = Intent(this, DukansActivity::class.java)
+            startActivity(intent)
+            true
+        }
     }
 
     private fun setupRecyclerView() {

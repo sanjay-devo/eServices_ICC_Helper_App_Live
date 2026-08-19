@@ -13,8 +13,8 @@ android {
         applicationId = "com.icc.eserviceshelper"
         minSdk = 24
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.1.4"
+        versionCode = 9
+        versionName = "1.1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
